@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Der Winterarzt — Klickdummy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F1;
+    --surface: #FFFFFF;
+    --surface-2: #F1EEE7;
+    --border: rgba(30,25,20,0.12);
+    --border-strong: rgba(30,25,20,0.22);
+    --text: #241F1A;
+    --text-secondary: #5A5147;
+    --text-muted: #8C8377;
+    --accent: #8C3A52;
+    --accent-bg: #F4E3E9;
+    --accent-border: #C98CA1;
+    --on-accent: #FFFFFF;
+    --feather: #1D6FA5;
+    --flame: #B23A2E;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-serif: 'Source Serif 4', Georgia, serif;
+    --radius: 10px;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #17140F;
+      --surface: #221E19;
+      --surface-2: #2A2520;
+      --border: rgba(255,250,245,0.12);
+      --border-strong: rgba(255,250,245,0.22);
+      --text: #F3EFE8;
+      --text-secondary: #C9C0B4;
+      --text-muted: #948B7E;
+      --accent: #E6A9BC;
+      --accent-bg: #3A2530;
+      --accent-border: #6E3E4F;
+      --on-accent: #241318;
+      --feather: #7FB4E0;
+      --flame: #E08B7D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17140F;
+    --surface: #221E19;
+    --surface-2: #2A2520;
+    --border: rgba(255,250,245,0.12);
+    --border-strong: rgba(255,250,245,0.22);
+    --text: #F3EFE8;
+    --text-secondary: #C9C0B4;
+    --text-muted: #948B7E;
+    --accent: #E6A9BC;
+    --accent-bg: #3A2530;
+    --accent-border: #6E3E4F;
+    --on-accent: #241318;
+    --feather: #7FB4E0;
+    --flame: #E08B7D;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: var(--font-sans);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px 12px;
+  }
+  .device {
+    width: 100%; max-width: 380px;
+    background: var(--surface);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 32px;
+    padding: 16px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .statusbar { display:flex; justify-content:flex-end; font-size:11px; color:var(--text-muted); padding:2px 6px 10px; }
+  .topbar { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .iconbtn {
+    width:36px; height:36px; border-radius:50%; border:0.5px solid var(--border);
+    background: var(--surface); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; cursor:pointer; color:var(--text);
+  }
+  .iconbtn:hover { background: var(--surface-2); }
+  .titleblock { flex:1; }
+  .titleblock p { margin:0; }
+  .titleblock .t1 { font-size:14px; font-weight:500; }
+  .titleblock .t2 { font-size:11px; color:var(--text-muted); }
+  .nextbtn {
+    display:flex; align-items:center; gap:4px; font-size:12px; padding:8px 12px;
+    border-radius:20px; border:0.5px solid var(--border); background:var(--surface);
+    cursor:pointer; color:var(--text); white-space:nowrap;
+  }
+  .nextbtn:hover { background: var(--surface-2); }
+  .progress { display:flex; gap:6px; margin-bottom:14px; }
+  .progress span { flex:1; height:4px; border-radius:2px; background:var(--border-strong); }
+  .progress span.active { background: var(--accent); }
+  .toggle {
+    display:flex; background:var(--surface-2); border:0.5px solid var(--border);
+    border-radius:20px; padding:3px; margin-bottom:14px;
+  }
+  .toggle button {
+    flex:1; font-size:12px; padding:8px 0; border-radius:16px; border:none;
+    background:transparent; color:var(--text-muted); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+    font-family: var(--font-sans);
+  }
+  .toggle button.on { background:var(--surface); border:0.5px solid var(--border-strong); color:var(--text); }
+  .narration {
+    background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px;
+    padding:14px; margin-bottom:14px;
+  }
+  .narration p { font-family: var(--font-serif); font-size:14px; line-height:1.7; color:var(--text-secondary); margin:0; }
+  .sectionlabel { display:flex; align-items:center; gap:8px; margin:14px 0 12px; }
+  .sectionlabel .line { flex:1; height:0.5px; background:var(--border); }
+  .sectionlabel span.lbl { font-size:11px; color:var(--accent); font-weight:500; }
+  .charline { display:flex; gap:8px; margin-bottom:12px; }
+  .avatar {
+    width:34px; height:34px; border-radius:50%; background:var(--accent-bg);
+    display:flex; align-items:center; justify-content:center; font-size:13px;
+    font-weight:500; color:var(--accent); flex-shrink:0;
+  }
+  .bubble { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:10px 12px; flex:1; }
+  .bubble .who { font-size:12px; color:var(--text-muted); margin:0 0 4px; }
+  .bubble .line { font-size:14px; margin:0; line-height:1.5; }
+  .audiorow { display:flex; align-items:center; gap:6px; margin-top:8px; }
+  .audiotrack { flex:1; height:3px; background:var(--border); border-radius:2px; position:relative; }
+  .audiotrack i { position:absolute; left:0; top:0; height:100%; width:35%; background:var(--accent); border-radius:2px; }
+  .time { font-size:11px; color:var(--text-muted); }
+  .userbubble { display:flex; justify-content:flex-end; margin-bottom:8px; }
+  .userbubble div { background:var(--accent-bg); border-radius:12px; padding:10px 12px; max-width:80%; }
+  .userbubble p { font-size:14px; margin:0; line-height:1.5; color:var(--text); }
+  .badge-row { display:flex; justify-content:flex-end; margin-bottom:16px; }
+  .badge {
+    font-size:11px; color:var(--accent); background:var(--accent-bg); padding:4px 10px;
+    border-radius:20px; display:flex; align-items:center; gap:4px;
+  }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .chip {
+    font-size:12px; padding:9px 14px; border-radius:20px; border:0.5px solid var(--border);
+    background:var(--surface); cursor:pointer; color:var(--text); font-family: var(--font-sans);
+  }
+  .chip:hover { background:var(--surface-2); }
+  .chip.selected { border:0.5px solid var(--accent-border); background:var(--accent-bg); color:var(--accent); }
+  .expandbtn {
+    font-size:12px; border:none; background:none; color:var(--accent); cursor:pointer;
+    display:flex; align-items:center; gap:4px; padding:6px 0; margin-bottom:16px; font-family: var(--font-sans);
+  }
+  .inputrow {
+    display:flex; align-items:center; gap:10px; background:var(--surface-2); border:0.5px solid var(--border);
+    border-radius:24px; padding:10px 12px; margin-bottom:12px;
+  }
+  .inputrow input {
+    border:none; background:none; outline:none; flex:1; font-size:13px; color:var(--text);
+    font-family: var(--font-sans);
+  }
+  .inputrow input::placeholder { color: var(--text-muted); }
+  .mic {
+    color:var(--accent); font-size:18px; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .spicyrow { display:flex; align-items:center; gap:10px; padding:2px 4px; }
+  .spicyrow input[type=range] {
+    flex:1; -webkit-appearance:none; height:4px; border-radius:2px;
+    background: linear-gradient(to right, var(--feather), var(--flame));
+  }
+  .spicyrow input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--text); cursor:pointer;
+  }
+  .spicyrow input[type=range]::-moz-range-thumb {
+    width:16px; height:16px; border-radius:50%; background:var(--surface); border:2px solid var(--text); cursor:pointer;
+  }
+  .screen { display:none; }
+  .screen.active { display:block; }
+  .toast {
+    position:absolute; left:50%; bottom:18px; transform:translateX(-50%) translateY(8px);
+    background:var(--text); color:var(--bg); font-size:12px; padding:8px 14px; border-radius:20px;
+    opacity:0; transition: opacity .2s ease, transform .2s ease; pointer-events:none; white-space:nowrap;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  /* voice-only view */
+  .voicecenter { display:flex; flex-direction:column; align-items:center; padding:1rem 0 1.5rem; }
+  .ringwrap { position:relative; width:96px; height:96px; margin-bottom:20px; }
+  .ring { position:absolute; border-radius:50%; border:2px solid var(--accent-border); }
+  .ring1 { inset:0; opacity:0.4; }
+  .ring2 { inset:8px; opacity:0.7; }
+  .ringavatar {
+    position:absolute; inset:16px; border-radius:50%; background:var(--accent-bg);
+    display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:500; color:var(--accent);
+  }
+  .wave { display:flex; align-items:center; gap:4px; height:28px; margin-bottom:14px; }
+  .wave span { width:3px; border-radius:2px; background:var(--accent); animation: bounce 1.1s ease-in-out infinite; }
+  .wave span:nth-child(1){height:10px; animation-delay:0s;}
+  .wave span:nth-child(2){height:22px; animation-delay:.1s;}
+  .wave span:nth-child(3){height:14px; animation-delay:.2s;}
+  .wave span:nth-child(4){height:28px; animation-delay:.3s;}
+  .wave span:nth-child(5){height:8px; animation-delay:.4s;}
+  .wave span:nth-child(6){height:18px; animation-delay:.5s;}
+  .wave span:nth-child(7){height:12px; animation-delay:.6s;}
+  @keyframes bounce { 0%,100%{ transform:scaleY(0.6);} 50%{ transform:scaleY(1);} }
+  @media (prefers-reduced-motion: reduce) { .wave span { animation:none; } }
+  .speakstatus { font-size:13px; color:var(--text-muted); margin:0; }
+  .bigmic {
+    width:56px; height:56px; border-radius:50%; border:none; background:var(--accent);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; margin:0 auto 16px; color:var(--on-accent);
+  }
+  .center { display:flex; justify-content:center; }
+  .profileheader p { margin:0; }
+  .profileheader .h1 { font-size:16px; font-weight:500; margin-bottom:4px; }
+  .profileheader .sub { font-size:12px; color:var(--text-secondary); line-height:1.5; }
+  .label-sm { font-size:12px; font-weight:500; color:var(--text-muted); margin:0 0 8px; }
+  .actionsrow { display:flex; gap:10px; margin-top:6px; }
+  .actionsrow button {
+    flex:1; font-size:13px; padding:12px; border-radius:var(--radius); cursor:pointer; font-family: var(--font-sans);
+  }
+  .btn-ghost { border:0.5px solid var(--border); background:var(--surface); color:var(--text); }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .btn-primary { border:none; background:var(--accent); color:var(--on-accent); }
+  .caption-center { font-size:11px; color:var(--text-muted); margin:0 0 20px; text-align:center; }
+  .storycard {
+    display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:12px;
+    border:0.5px solid var(--border); margin-bottom:10px; background:var(--surface);
+  }
+  .storycard.available { cursor:pointer; }
+  .storycard.available:hover { background:var(--surface-2); border-color:var(--border-strong); }
+  .storycard.locked { opacity:0.5; }
+  .storycover {
+    width:44px; height:44px; border-radius:10px; background:var(--surface-2); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .storymeta { flex:1; min-width:0; }
+  .storymeta p { margin:0; }
+  .storymeta .stitle { font-size:14px; font-weight:500; margin-bottom:3px; }
+  .storymeta .sdesc { font-size:12px; color:var(--text-secondary); line-height:1.4; margin-bottom:5px; }
+  .storymeta .stag { font-size:11px; color:var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="device" id="device">
+
+  <!-- ===================== PROFILE SCREEN ===================== -->
+  <div class="screen active" id="screen-profile">
+    <div class="statusbar"><span id="clock1">21:04</span></div>
+
+    <div class="profileheader" style="margin-bottom:14px;">
+      <p class="h1">Deine Vorlieben</p>
+      <p class="sub">Bestimmt, welche Geschichten passen und was in den Gesprächen passiert.</p>
+    </div>
+
+    <p class="label-sm">Ich mag gerne …</p>
+    <div class="chips" id="prefChips">
+      <button class="chip selected" data-chip="pref">Zärtliche Annäherung <span>✓</span></button>
+      <button class="chip" data-chip="pref">Verbotene Liebe</button>
+      <button class="chip" data-chip="pref">Feindliebe</button>
+      <button class="chip" data-chip="pref">Zweite Chance</button>
+      <button class="chip" data-chip="pref">Altmodische Verehrung</button>
+    </div>
+    <div class="chips" id="prefChipsMore" style="display:none;">
+      <button class="chip" data-chip="pref">Heimliche Treffen</button>
+      <button class="chip" data-chip="pref">Ärzte &amp; Adel</button>
+      <button class="chip" data-chip="pref">Slow Burn</button>
+    </div>
+    <button class="expandbtn" id="prefExpand" onclick="toggleExpand('prefChipsMore','prefExpand', '3')">3 weitere anzeigen <span>▾</span></button>
+
+    <div class="inputrow">
+      <input type="text" id="ownPref" placeholder="Eigene Vorliebe hinzufügen …" onkeydown="if(event.key==='Enter')addOwnChip('prefChips', this)">
+      <span onclick="addOwnChip('prefChips', document.getElementById('ownPref'))" style="cursor:pointer; color:var(--accent);">+</span>
+    </div>
+
+    <p class="label-sm">Bitte nicht …</p>
+    <div class="chips" id="tabuChips">
+      <button class="chip selected" data-chip="tabu">Dreieckskonstellation <span>✓</span></button>
+      <button class="chip" data-chip="tabu">Eifersuchtsdramen</button>
+      <button class="chip" data-chip="tabu">Trennungsszenen</button>
+    </div>
+    <div class="chips" id="tabuChipsMore" style="display:none;">
+      <button class="chip" data-chip="tabu">Untreue</button>
+      <button class="chip" data-chip="tabu">Krankheit als Wendepunkt</button>
+    </div>
+    <button class="expandbtn" id="tabuExpand" onclick="toggleExpand('tabuChipsMore','tabuExpand', '2')">2 weitere anzeigen <span>▾</span></button>
+
+    <p class="label-sm">Wie intensiv darf es werden?</p>
+    <div class="spicyrow" style="margin-bottom:6px;">
+      <span aria-hidden="true">🪶</span>
+      <input type="range" min="0" max="4" value="0" step="1" id="profileSpicy" oninput="updateSpicyCaption()">
+      <span aria-hidden="true">🔥</span>
+    </div>
+    <p class="caption-center" id="spicyCaption">Aktuell: zart</p>
+
+    <div class="actionsrow">
+      <button class="btn-ghost" onclick="goToLibrary()">Später einrichten</button>
+      <button class="btn-primary" onclick="goToLibrary()">Fertig</button>
+    </div>
+  </div>
+
+  <!-- ===================== LIBRARY SCREEN ===================== -->
+  <div class="screen" id="screen-library">
+    <div class="statusbar"><span id="clock3">21:04</span></div>
+
+    <div class="topbar">
+      <div class="iconbtn" onclick="goToProfile()" aria-label="Zurück">←</div>
+      <div class="titleblock">
+        <p class="t1">Deine Geschichten</p>
+        <p class="t2">Wähle, wo du weitermachen willst</p>
+      </div>
+    </div>
+
+    <div class="storycard available" onclick="goToStory()">
+      <div class="storycover" style="background:var(--accent-bg); color:var(--accent);">❄</div>
+      <div class="storymeta">
+        <p class="stitle">Der Winterarzt</p>
+        <p class="sdesc">Eine verschneite Kleinstadt, eine zweite Chance und ein Arzt, der mehr verbirgt, als er zugibt.</p>
+        <p class="stag">5 Kapitel · zart bis intensiv</p>
+      </div>
+    </div>
+
+    <div class="storycard locked">
+      <div class="storycover">🔒</div>
+      <div class="storymeta">
+        <p class="stitle">Die Erbin von Rosenthal</p>
+        <p class="sdesc">Ein altes Gut, ein Geheimnis und ein Mann, der es hüten soll.</p>
+        <p class="stag">Bald verfügbar</p>
+      </div>
+    </div>
+
+    <div class="storycard locked">
+      <div class="storycover">🔒</div>
+      <div class="storymeta">
+        <p class="stitle">Zwei Herzen, ein Sturm</p>
+        <p class="sdesc">Gestrandet auf einer Insel, mit jemandem, den sie eigentlich meiden wollte.</p>
+        <p class="stag">Bald verfügbar</p>
+      </div>
+    </div>
+
+    <div class="storycard locked">
+      <div class="storycover">🔒</div>
+      <div class="storymeta">
+        <p class="stitle">Sein letztes Versprechen</p>
+        <p class="sdesc">Ein Wiedersehen nach zehn Jahren, das keiner von beiden erwartet hat.</p>
+        <p class="stag">Bald verfügbar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== STORY SCREEN ===================== -->
+  <div class="screen" id="screen-story">
+    <div class="statusbar"><span id="clock2">21:04</span></div>
+
+    <div class="topbar">
+      <div class="iconbtn" onclick="goToLibrary()" aria-label="Zurück">←</div>
+      <div class="titleblock">
+        <p class="t1">Der Winterarzt</p>
+        <p class="t2">Kapitel 2 von 5</p>
+      </div>
+      <button class="nextbtn" onclick="advanceProgress()">Weiter →</button>
+    </div>
+
+    <div class="progress" id="progressBar">
+      <span class="active"></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="toggle">
+      <button id="btnTextMode" class="on" onclick="setViewMode('text')">✎ Text lesen</button>
+      <button id="btnVoiceMode" onclick="setViewMode('voice')">💬 Nur Stimme</button>
+    </div>
+
+    <!-- TEXT MODE CONTENT -->
+    <div id="textMode">
+      <div class="narration">
+        <p>Der Schnee fiel dicht, als sie die Praxis betrat. Er sah auf, überrascht, sie so spät noch zu sehen — und für einen Moment sagte keiner von beiden etwas.</p>
+      </div>
+
+      <div class="sectionlabel"><span class="line"></span><span class="lbl">jetzt sprechen</span><span class="line"></span></div>
+
+      <div class="charline">
+        <div class="avatar">DS</div>
+        <div class="bubble">
+          <p class="who">Dr. Stoltz</p>
+          <p class="line">„Ich hätte nicht gedacht, dich heute noch zu sehen."</p>
+          <div class="audiorow">
+            <span aria-hidden="true">▶</span>
+            <div class="audiotrack"><i></i></div>
+            <span class="time">0:04</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="conversationFeed"></div>
+
+      <div class="chips" id="quickReplies">
+        <button class="chip" onclick="pickReply(this,'normal')">„Was meinst du damit?"</button>
+        <button class="chip" onclick="pickReply(this,'normal')">Schweigend lächeln</button>
+        <button class="chip" onclick="pickReply(this,'regie')">Ich wünsche mir, dass er mich jetzt in den Arm nimmt</button>
+      </div>
+
+      <div class="inputrow">
+        <span class="mic" onclick="showToast('In diesem Klickdummy nicht simuliert')">🎙</span>
+        <input type="text" placeholder="Oder sprich einfach los …" readonly onclick="showToast('In diesem Klickdummy nicht simuliert')">
+      </div>
+    </div>
+
+    <!-- VOICE MODE CONTENT -->
+    <div id="voiceMode" style="display:none;">
+      <div class="voicecenter">
+        <div class="ringwrap">
+          <div class="ring ring1"></div>
+          <div class="ring ring2"></div>
+          <div class="ringavatar">DS</div>
+        </div>
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="speakstatus" id="voiceStatus">Dr. Stoltz spricht …</p>
+      </div>
+      <div class="badge-row" style="justify-content:center; margin-bottom:22px;" id="voiceBadgeRow" style="display:none;">
+        <span class="badge">🎬 Regie erkannt</span>
+      </div>
+      <button class="bigmic" aria-label="Sprechen" onclick="pulseListen()">🎙</button>
+    </div>
+
+    <div class="spicyrow" style="margin-top:8px;">
+      <span aria-hidden="true">🪶</span>
+      <input type="range" min="0" max="4" value="1" step="1" id="storySpicy">
+      <span aria-hidden="true">🔥</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function pad(n){ return n.toString().padStart(2,'0'); }
+function tickClock(){
+  const d = new Date();
+  const s = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  document.getElementById('clock1').textContent = s;
+  document.getElementById('clock2').textContent = s;
+  document.getElementById('clock3').textContent = s;
+}
+tickClock();
+setInterval(tickClock, 15000);
+
+document.querySelectorAll('#prefChips .chip, #prefChipsMore .chip, #tabuChips .chip, #tabuChipsMore .chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    this.classList.toggle('selected');
+    if(this.classList.contains('selected')){
+      if(!this.querySelector('span')) this.insertAdjacentHTML('beforeend', ' <span>✓</span>');
+    } else {
+      const s = this.querySelector('span'); if(s) s.remove();
+    }
+  });
+});
+
+function toggleExpand(id, btnId, count){
+  const el = document.getElementById(id);
+  const btn = document.getElementById(btnId);
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'flex' : 'none';
+  btn.innerHTML = isHidden ? 'Weniger anzeigen <span>▴</span>' : (count + ' weitere anzeigen <span>▾</span>');
+}
+
+function addOwnChip(containerId, inputEl){
+  const val = inputEl.value.trim();
+  if(!val) return;
+  const container = document.getElementById(containerId);
+  const btn = document.createElement('button');
+  btn.className = 'chip selected';
+  btn.innerHTML = val + ' <span>✓</span>';
+  btn.addEventListener('click', function(){
+    this.classList.toggle('selected');
+    if(this.classList.contains('selected')){
+      if(!this.querySelector('span')) this.insertAdjacentHTML('beforeend', ' <span>✓</span>');
+    } else { const s = this.querySelector('span'); if(s) s.remove(); }
+  });
+  container.appendChild(btn);
+  inputEl.value = '';
+}
+
+function updateSpicyCaption(){
+  const v = parseInt(document.getElementById('profileSpicy').value,10);
+  const labels = ['zart','mild','gemischt','deutlich','intensiv'];
+  document.getElementById('spicyCaption').textContent = 'Aktuell: ' + labels[v];
+}
+
+function goToLibrary(){
+  document.getElementById('screen-profile').classList.remove('active');
+  document.getElementById('screen-story').classList.remove('active');
+  document.getElementById('screen-library').classList.add('active');
+}
+function goToStory(){
+  document.getElementById('screen-library').classList.remove('active');
+  document.getElementById('screen-story').classList.add('active');
+  const v = document.getElementById('profileSpicy').value;
+  document.getElementById('storySpicy').value = v;
+}
+function goToProfile(){
+  document.getElementById('screen-story').classList.remove('active');
+  document.getElementById('screen-library').classList.remove('active');
+  document.getElementById('screen-profile').classList.add('active');
+}
+
+function advanceProgress(){
+  const spans = document.querySelectorAll('#progressBar span');
+  for(let i=0;i<spans.length;i++){
+    if(!spans[i].classList.contains('active')){ spans[i].classList.add('active'); break; }
+  }
+}
+
+function setViewMode(mode){
+  const isText = mode === 'text';
+  document.getElementById('btnTextMode').classList.toggle('on', isText);
+  document.getElementById('btnVoiceMode').classList.toggle('on', !isText);
+  document.getElementById('textMode').style.display = isText ? 'block' : 'none';
+  document.getElementById('voiceMode').style.display = isText ? 'none' : 'block';
+}
+
+function pulseListen(){
+  const status = document.getElementById('voiceStatus');
+  const prev = status.textContent;
+  status.textContent = 'Ich höre zu …';
+  setTimeout(function(){ status.textContent = prev; }, 1600);
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+function pickReply(btnEl, kind){
+  const feed = document.getElementById('conversationFeed');
+  const replyText = btnEl.textContent;
+
+  const userDiv = document.createElement('div');
+  userDiv.className = 'userbubble';
+  userDiv.innerHTML = '<div><p>„' + replyText + '"</p></div>';
+  feed.appendChild(userDiv);
+
+  if(kind === 'regie'){
+    const badgeDiv = document.createElement('div');
+    badgeDiv.className = 'badge-row';
+    badgeDiv.innerHTML = '<span class="badge">🎬 Regieanweisung erkannt</span>';
+    feed.appendChild(badgeDiv);
+
+    const narr = document.createElement('div');
+    narr.className = 'narration';
+    narr.innerHTML = '<p>Er zögert einen Moment, dann schließt er sie wortlos in die Arme. Draußen fällt weiter der Schnee.</p>';
+    feed.appendChild(narr);
+
+    document.getElementById('quickReplies').innerHTML =
+      '<button class="chip" onclick="pickReply(this,\'normal\')">Die Umarmung erwidern</button>' +
+      '<button class="chip" onclick="pickReply(this,\'normal\')">Sich sanft lösen</button>' +
+      '<button class="chip" onclick="pickReply(this,\'normal\')">Den Moment einfach genießen</button>';
+  } else {
+    const charDiv = document.createElement('div');
+    charDiv.className = 'charline';
+    charDiv.innerHTML = '<div class="avatar">DS</div><div class="bubble"><p class="who">Dr. Stoltz</p><p class="line">Er sieht sie einen Moment lang an, bevor er weiterspricht.</p></div>';
+    feed.appendChild(charDiv);
+  }
+
+  btnEl.parentElement.querySelectorAll('.chip').forEach(function(c){ if(c!==btnEl) c.remove(); });
+  if(kind !== 'regie') btnEl.remove();
+
+  feed.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+updateSpicyCaption();
+</script>
+
+</body>
+</html>
